@@ -1,14 +1,15 @@
 package com.bookmyshow.show.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "city", indexes = {
+    @Index(name = "idx_city_name", columnList = "name"),
+    @Index(name = "idx_city_active", columnList = "active")
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -18,9 +19,12 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false, length = 100)
     private String state;
 
-    private Boolean active;
+    @Column(nullable = false)
+    private Boolean active = true;
 }

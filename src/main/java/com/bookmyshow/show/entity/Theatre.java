@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "theatre", indexes = {
+    @Index(name = "idx_theatre_city_id", columnList = "city_id"),
+    @Index(name = "idx_theatre_active", columnList = "active")
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,13 +20,16 @@ public class Theatre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 200)
     private String name;
 
-    private  String address;
+    @Column(length = 500)
+    private String address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    private Boolean active;
+    @Column(nullable = false)
+    private Boolean active = true;
 }
