@@ -9,6 +9,10 @@ import com.bookmyshow.show.repository.CityRepository;
 import com.bookmyshow.show.repository.TheatreRepository;
 import com.bookmyshow.show.service.TheatreService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +41,13 @@ public class TheatreServiceImpl implements TheatreService {
         theatre.setActive(true);
 
         return TheatreMapper.toDto(theatreRepository.save(theatre));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TheatreResponse> getTheatreByCityId(Long cityId) {
+        return theatreRepository.findAllByCityId(cityId).stream()
+                .map(TheatreMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
