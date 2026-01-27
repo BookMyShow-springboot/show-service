@@ -4,6 +4,7 @@ import com.bookmyshow.show.dto.TheatreRequest;
 import com.bookmyshow.show.dto.TheatreResponse;
 import com.bookmyshow.show.entity.City;
 import com.bookmyshow.show.entity.Theatre;
+import com.bookmyshow.show.exception.ResourceNotFoundException;
 import com.bookmyshow.show.mapper.TheatreMapper;
 import com.bookmyshow.show.repository.CityRepository;
 import com.bookmyshow.show.repository.TheatreRepository;
@@ -32,7 +33,7 @@ public class TheatreServiceImpl implements TheatreService {
         }
         
         City city = cityRepository.findById(cityId)
-                .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
+                .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + cityId));
 
         Theatre theatre = new Theatre();
         theatre.setName(theatreRequest.name());
