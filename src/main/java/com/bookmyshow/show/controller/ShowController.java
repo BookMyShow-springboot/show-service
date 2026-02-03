@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api/shows")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class ShowController {
 
 
@@ -33,7 +35,11 @@ public class ShowController {
 
     @PostMapping
     public ResponseEntity<ShowResponse> createShow(@Valid @RequestBody ShowRequest showRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(showService.createShow(showRequest));
+        log.info("Create show request received movieId={}, screenId={}, showDate={}, startTime={}, endTime={}",
+                showRequest.movieId(), showRequest.screenId(), showRequest.showDate(), showRequest.startTime(), showRequest.endTime());
+        ShowResponse created = showService.createShow(showRequest);
+        log.info("Show created successfully showId={}", created.id());
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
@@ -57,7 +63,10 @@ public class ShowController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date
     ) {
-        return ResponseEntity.ok(showService.getShowsByMovieCityAndDate(movieId, cityId, date));
+        log.info("Get shows request received movieId={}, cityId={}, date={}", movieId, cityId, date);
+        List<ShowResponse> shows = showService.getShowsByMovieCityAndDate(movieId, cityId, date);
+        log.info("Get shows success movieId={}, cityId={}, date={}, count={}", movieId, cityId, date, shows.size());
+        return ResponseEntity.ok(shows);
     }
 
 }

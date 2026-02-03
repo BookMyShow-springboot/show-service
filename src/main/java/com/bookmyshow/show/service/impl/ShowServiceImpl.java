@@ -12,6 +12,7 @@ import com.bookmyshow.show.repository.ScreenRepository;
 import com.bookmyshow.show.repository.ShowRepository;
 import com.bookmyshow.show.service.ShowService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShowServiceImpl implements ShowService {
 
     private final ShowRepository showRepository;
@@ -31,6 +33,9 @@ public class ShowServiceImpl implements ShowService {
         // Request is validated at controller layer via @Valid.
         Long movieId = Objects.requireNonNull(request.movieId());
         Long screenId = Objects.requireNonNull(request.screenId());
+
+        log.debug("Creating show movieId={}, screenId={}, showDate={}, startTime={}, endTime={}",
+                movieId, screenId, request.showDate(), request.startTime(), request.endTime());
 
         Show show = new Show();
         Movie movie = movieRepository.findById(movieId).orElseThrow(()->
@@ -44,11 +49,14 @@ public class ShowServiceImpl implements ShowService {
         show.setEndTime(request.endTime());
         show.setPrice(request.price());
 
-        return ShowMapper.toDto(showRepository.save(show));
+        Show saved = showRepository.save(show);
+        log.debug("Show persisted showId={}", saved.getId());
+        return ShowMapper.toDto(saved);
     }
 
     @Override
     public List<ShowResponse> getShowsByMovieCityAndDate(Long movieId, Long cityId, LocalDate showDate) {
+        log.debug("Fetching shows movieId={}, cityId={}, showDate={}", movieId, cityId, showDate);
         return showRepository.findShowsByMovieCityAndDate(movieId, cityId, showDate)
                 .stream()
                 .map(ShowMapper::toDto)
