@@ -14,6 +14,10 @@ import com.bookmyshow.show.service.ShowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class ShowServiceImpl implements ShowService {
@@ -24,12 +28,16 @@ public class ShowServiceImpl implements ShowService {
 
     @Override
     public ShowResponse createShow(ShowRequest request) {
+        // Request is validated at controller layer via @Valid.
+        Long movieId = Objects.requireNonNull(request.movieId());
+        Long screenId = Objects.requireNonNull(request.screenId());
+
         Show show = new Show();
-        Movie movie = movieRepository.findById(request.movieId()).orElseThrow(()->
-                new ResourceNotFoundException("movie not found with id " + request.movieId()));
+        Movie movie = movieRepository.findById(movieId).orElseThrow(()->
+                new ResourceNotFoundException("movie not found with id " + movieId));
         show.setMovie(movie);
-        Screen screen = screenRepository.findById(request.screenId()).orElseThrow(()->
-                new ResourceNotFoundException("screen not found with id " + request.screenId()));
+        Screen screen = screenRepository.findById(screenId).orElseThrow(()->
+                new ResourceNotFoundException("screen not found with id " + screenId));
         show.setScreen(screen);
         show.setShowDate(request.showDate());
         show.setStartTime(request.startTime());
@@ -37,5 +45,13 @@ public class ShowServiceImpl implements ShowService {
         show.setPrice(request.price());
 
         return ShowMapper.toDto(showRepository.save(show));
+    }
+
+    @Override
+    public List<ShowResponse> getShowsByMovieCityAndDate(Long movieId, Long cityId, LocalDate showDate) {
+        return showRepository.findShowsByMovieCityAndDate(movieId, cityId, showDate)
+                .stream()
+                .map(ShowMapper::toDto)
+                .toList();
     }
 }

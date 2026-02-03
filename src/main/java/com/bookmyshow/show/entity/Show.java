@@ -10,11 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "show", indexes = {
+@Table(name = "`show`", indexes = {
     @Index(name = "idx_show_movie_id", columnList = "movie_id"),
     @Index(name = "idx_show_screen_id", columnList = "screen_id"),
-    @Index(name = "idx_show_date", columnList = "showDate"),
-    @Index(name = "idx_show_movie_date", columnList = "movie_id,showDate")
+    @Index(name = "idx_show_date", columnList = "show_date"),
+    @Index(name = "idx_show_movie_date", columnList = "movie_id,show_date")
 })
 @Data
 @NoArgsConstructor

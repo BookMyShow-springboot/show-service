@@ -1,6 +1,8 @@
 package com.bookmyshow.show.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,6 +65,30 @@ public class GlobalExceptionHandler {
                 .message("Invalid request payload")
                 .path(request.getRequestURI())
                 .validationErrors(fieldErrors)
+                .build();
+
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex,
+            HttpServletRequest request
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            // Example path: getShowsByMovieCityAndDate.movieId
+            String path = violation.getPropertyPath() == null ? "param" : violation.getPropertyPath().toString();
+            errors.put(path, violation.getMessage());
+        }
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Validation Failed")
+                .message("Invalid request parameters")
+                .path(request.getRequestURI())
+                .validationErrors(errors)
                 .build();
 
         return ResponseEntity.badRequest().body(error);

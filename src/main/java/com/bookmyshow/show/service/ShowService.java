@@ -2,9 +2,13 @@ package com.bookmyshow.show.service;
 
 import com.bookmyshow.show.dto.ShowRequest;
 import com.bookmyshow.show.dto.ShowResponse;
-import com.bookmyshow.show.entity.Show;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface ShowService {
 
-    public ShowResponse createShow(ShowRequest request);
+    ShowResponse createShow(ShowRequest request);
+
+    List<ShowResponse> getShowsByMovieCityAndDate(Long movieId, Long cityId, LocalDate showDate);
 }
