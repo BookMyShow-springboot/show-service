@@ -13,21 +13,20 @@ import java.util.List;
 public interface ShowRepository extends JpaRepository<Show, Long> {
 
     @Query("""
-            select s
-            from Show s
-            join s.screen sc
-            join sc.theatre t
-            join t.city c
-            where s.movie.id = :movieId
-              and c.id = :cityId
-              and s.showDate = :showDate
-              and t.active = true
-              and c.active = true
-            order by s.startTime asc
-            """)
+    SELECT s
+    FROM Show s
+    JOIN s.movie m
+    JOIN s.screen sc
+    JOIN sc.theatre t
+    JOIN t.city c
+    WHERE m.id = :movieId
+      AND c.id = :cityId
+      AND s.showDate = :date
+""")
     List<Show> findShowsByMovieCityAndDate(
             @Param("movieId") Long movieId,
             @Param("cityId") Long cityId,
-            @Param("showDate") LocalDate showDate
+            @Param("date") LocalDate date
     );
+
 }
